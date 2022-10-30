@@ -53,7 +53,7 @@ namespace NinnoFeliz.Controllers
                 conn.Open();
                 cmd.CommandType = System.Data.CommandType.StoredProcedure;
                 cmd.CommandText = "sp_IngresarParentezco";
-                cmd.Parameters.Add("@detallePar", System.Data.SqlDbType.VarChar, 15).Value = parentezco.DetallePar + " sp_IngresarParentezco ";
+                cmd.Parameters.Add("@detallePar", System.Data.SqlDbType.VarChar, 15).Value = parentezco.DetallePar;
                 cmd.Parameters.Add("@idParentezco", System.Data.SqlDbType.Int).Value = parentezco.IdParentezco;
                 cmd.ExecuteNonQuery();
                 conn.Close();

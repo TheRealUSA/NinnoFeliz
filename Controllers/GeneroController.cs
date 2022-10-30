@@ -3,7 +3,6 @@ using NinnoFeliz.Data;
 using NinnoFeliz.Models;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
@@ -57,7 +56,7 @@ namespace NinnoFeliz.Controllers
                 cmd.CommandText = "sp_IngresarGenero";
                 cmd.Parameters.Add("@detalleGen", System.Data.SqlDbType.VarChar, 15).Value = genero.DetalleGen + "sp_IngresarGenero";
                 cmd.Parameters.Add("@idGenero", System.Data.SqlDbType.Int).Value = genero.IdGenero;
-                cmd.ExecuteNonQuery();
+                await cmd.ExecuteNonQueryAsync();
                 conn.Close();
                 return RedirectToAction(nameof(Index));
             }
