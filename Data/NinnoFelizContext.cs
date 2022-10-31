@@ -239,7 +239,7 @@ namespace NinnoFeliz.Data
                     .HasConstraintName("FK_MatriculaNinno");
             });
 
-
+        }
 
 
     }
