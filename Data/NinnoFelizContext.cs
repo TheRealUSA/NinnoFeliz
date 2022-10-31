@@ -48,7 +48,7 @@ namespace NinnoFeliz.Data
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("server=DESKTOP-IUFVA9T; database=NinnoFeliz; trusted_connection=true;");
+                optionsBuilder.UseSqlServer("server=DESKTOP-HPDH4AT; database=NinnoFeliz; trusted_connection=true;");
             }
         }
 
