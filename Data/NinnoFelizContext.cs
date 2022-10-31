@@ -3,20 +3,28 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using NinnoFeliz.Models;
 
+
+
 #nullable disable
+
+
 
 namespace NinnoFeliz.Data
 {
-    public partial class NinnoFelizContext : DbContext
+    public class NinnoFelizContext : DbContext
     {
         public NinnoFelizContext()
         {
         }
 
+
+
         public NinnoFelizContext(DbContextOptions<NinnoFelizContext> options)
-            : base(options)
+             : base(options)
         {
         }
+
+
 
         public virtual DbSet<AbonadorCargoMensuale> AbonadorCargoMensuales { get; set; }
         public virtual DbSet<Abonadore> Abonadores { get; set; }
@@ -231,243 +239,8 @@ namespace NinnoFeliz.Data
                     .HasConstraintName("FK_MatriculaNinno");
             });
 
-            modelBuilder.Entity<Menu>(entity =>
-            {
-                entity.HasKey(e => e.IdNumeroMenu)
-                    .HasName("PK_Menu");
 
-                entity.Property(e => e.IdNumeroMenu).ValueGeneratedNever();
 
-                entity.Property(e => e.NombreMenu).IsUnicode(false);
-            });
 
-            modelBuilder.Entity<MenuPlato>(entity =>
-            {
-                entity.HasKey(e => e.IdnumeroMenuPlato)
-                    .HasName("PK_Menu_Plato");
-
-                entity.Property(e => e.IdnumeroMenuPlato).ValueGeneratedNever();
-
-                entity.HasOne(d => d.IdNumeroMenuNavigation)
-                    .WithMany(p => p.MenuPlatos)
-                    .HasForeignKey(d => d.IdNumeroMenu)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_MenuM");
-
-                entity.HasOne(d => d.IdPlatoNavigation)
-                    .WithMany(p => p.MenuPlatos)
-                    .HasForeignKey(d => d.IdPlato)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PlatoM");
-            });
-
-            modelBuilder.Entity<Mese>(entity =>
-            {
-                entity.HasKey(e => e.IdMes)
-                    .HasName("PK_Mes");
-
-                entity.Property(e => e.IdMes).ValueGeneratedNever();
-
-                entity.Property(e => e.NombreMes).IsUnicode(false);
-            });
-
-            modelBuilder.Entity<NaiPlato>(entity =>
-            {
-                entity.HasKey(e => e.IdNaiplato)
-                    .HasName("PK_NAIPlato");
-
-                entity.Property(e => e.IdNaiplato).ValueGeneratedNever();
-
-                entity.HasOne(d => d.IdNinnoAlergiaIngredienteNavigation)
-                    .WithMany(p => p.NaiPlatos)
-                    .HasForeignKey(d => d.IdNinnoAlergiaIngrediente)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_NinnoAlergiaIngredienteN");
-
-                entity.HasOne(d => d.IdPlatoNavigation)
-                    .WithMany(p => p.NaiPlatos)
-                    .HasForeignKey(d => d.IdPlato)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PlatoN");
-            });
-
-            modelBuilder.Entity<Ninno>(entity =>
-            {
-                entity.HasKey(e => e.IdNinno)
-                    .HasName("PK_Ninno");
-
-                entity.Property(e => e.IdNinno).ValueGeneratedNever();
-
-                entity.Property(e => e.Apell1Ninno).IsUnicode(false);
-
-                entity.Property(e => e.Apell2Ninno).IsUnicode(false);
-
-                entity.Property(e => e.DireccionNinno).IsUnicode(false);
-
-                entity.Property(e => e.NombreNinno).IsUnicode(false);
-
-                entity.HasOne(d => d.IdGeneroNavigation)
-                    .WithMany(p => p.Ninnos)
-                    .HasForeignKey(d => d.IdGenero)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_NinnoGenero");
-            });
-
-            modelBuilder.Entity<NinnoAlergiaIngrediente>(entity =>
-            {
-                entity.HasKey(e => e.IdNinnoAlergiaIngrediente)
-                    .HasName("PK_NinnoAlergiaIngrediente");
-
-                entity.Property(e => e.IdNinnoAlergiaIngrediente).ValueGeneratedNever();
-
-                entity.HasOne(d => d.IdAlergiaNavigation)
-                    .WithMany(p => p.NinnoAlergiaIngredientes)
-                    .HasForeignKey(d => d.IdAlergia)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_AlergiaN");
-
-                entity.HasOne(d => d.IdIngredienteNavigation)
-                    .WithMany(p => p.NinnoAlergiaIngredientes)
-                    .HasForeignKey(d => d.IdIngrediente)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_IngredienteN");
-
-                entity.HasOne(d => d.IdNinnoNavigation)
-                    .WithMany(p => p.NinnoAlergiaIngredientes)
-                    .HasForeignKey(d => d.IdNinno)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_NinnoN");
-            });
-
-            modelBuilder.Entity<NinnoEncargado>(entity =>
-            {
-                entity.HasKey(e => e.IdNiñoEncargado)
-                    .HasName("PK_Ninno_Encargado");
-
-                entity.Property(e => e.IdNiñoEncargado).ValueGeneratedNever();
-
-                entity.HasOne(d => d.IdEncargadoNavigation)
-                    .WithMany(p => p.NinnoEncargados)
-                    .HasForeignKey(d => d.IdEncargado)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Ninno_Encargados_Encargado");
-
-                entity.HasOne(d => d.IdNinnoNavigation)
-                    .WithMany(p => p.NinnoEncargados)
-                    .HasForeignKey(d => d.IdNinno)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Ninno_Encargados_Ninno");
-            });
-
-            modelBuilder.Entity<NinnoMenu>(entity =>
-            {
-                entity.HasKey(e => e.IdNinnoMenu)
-                    .HasName("PK_NinnoMenu");
-
-                entity.Property(e => e.IdNinnoMenu).ValueGeneratedNever();
-
-                entity.HasOne(d => d.IdNinnoNavigation)
-                    .WithMany(p => p.NinnoMenus)
-                    .HasForeignKey(d => d.IdNinno)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_NinnoNI");
-
-                entity.HasOne(d => d.IdNumeroMenuNavigation)
-                    .WithMany(p => p.NinnoMenus)
-                    .HasForeignKey(d => d.IdNumeroMenu)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_MenuNI");
-            });
-
-            modelBuilder.Entity<Parentezco>(entity =>
-            {
-                entity.HasKey(e => e.IdParentezco)
-                    .HasName("PK_Parentezco");
-
-                entity.Property(e => e.IdParentezco).ValueGeneratedNever();
-
-                entity.Property(e => e.DetallePar).IsUnicode(false);
-            });
-
-            modelBuilder.Entity<Plato>(entity =>
-            {
-                entity.HasKey(e => e.IdPlato)
-                    .HasName("PK_Plato");
-
-                entity.Property(e => e.IdPlato).ValueGeneratedNever();
-
-                entity.Property(e => e.NombrePlato).IsUnicode(false);
-
-                entity.Property(e => e.PrecioPlato).IsUnicode(false);
-            });
-
-            modelBuilder.Entity<PlatoIngrediente>(entity =>
-            {
-                entity.HasKey(e => e.IdPlatoIngrediente)
-                    .HasName("PK_Plato_Ingrediente");
-
-                entity.Property(e => e.IdPlatoIngrediente).ValueGeneratedNever();
-
-                entity.HasOne(d => d.IdIngredienteNavigation)
-                    .WithMany(p => p.PlatoIngredientes)
-                    .HasForeignKey(d => d.IdIngrediente)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_IngredientePI");
-
-                entity.HasOne(d => d.IdPlatoNavigation)
-                    .WithMany(p => p.PlatoIngredientes)
-                    .HasForeignKey(d => d.IdPlato)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PlatoPI");
-            });
-
-            modelBuilder.Entity<RegistroBaja>(entity =>
-            {
-                entity.HasKey(e => e.IdRegistroBaja)
-                    .HasName("PK_RegistroBaja");
-
-                entity.Property(e => e.IdRegistroBaja).ValueGeneratedNever();
-
-                entity.HasOne(d => d.IdNinnoNavigation)
-                    .WithMany(p => p.RegistroBajas)
-                    .HasForeignKey(d => d.IdNinno)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_RegistroBajasNinno");
-            });
-
-            modelBuilder.Entity<TipoAlergia>(entity =>
-            {
-                entity.HasKey(e => e.IdTipoAlergia)
-                    .HasName("PK_TipoAlergia");
-
-                entity.Property(e => e.IdTipoAlergia).ValueGeneratedNever();
-
-                entity.Property(e => e.NombreTipoAlergia).IsUnicode(false);
-            });
-
-            modelBuilder.Entity<UsoComedore>(entity =>
-            {
-                entity.HasKey(e => e.IdUsoComedor)
-                    .HasName("PK_UsoComedor");
-
-                entity.Property(e => e.IdUsoComedor).ValueGeneratedNever();
-
-                entity.HasOne(d => d.IdMesNavigation)
-                    .WithMany(p => p.UsoComedores)
-                    .HasForeignKey(d => d.IdMes)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Abonador_UsoComedoresMes");
-
-                entity.HasOne(d => d.IdNinnoNavigation)
-                    .WithMany(p => p.UsoComedores)
-                    .HasForeignKey(d => d.IdNinno)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Abonador_UsoComedoresNinno");
-            });
-
-            OnModelCreatingPartial(modelBuilder);
-        }
-
-        partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
     }
 }
