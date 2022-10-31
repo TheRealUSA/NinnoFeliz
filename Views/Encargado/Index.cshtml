@@ -1,0 +1,66 @@
+﻿@model IEnumerable<NinnoFeliz.Models.Encargado>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.NombreEncargado)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Apell1Encargado)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Apell2Encargado)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TelefonoEncargado)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DirecciónEncargado)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IdParentezcoNavigation)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.NombreEncargado)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Apell1Encargado)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Apell2Encargado)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TelefonoEncargado)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DirecciónEncargado)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IdParentezcoNavigation.DetallePar)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.IdEncargado">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.IdEncargado">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.IdEncargado">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
