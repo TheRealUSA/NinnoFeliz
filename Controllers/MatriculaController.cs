@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using NinnoFeliz.Data;
 using NinnoFeliz.Models;
@@ -61,8 +62,18 @@ namespace NinnoFeliz.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(matricula);
-                await _context.SaveChangesAsync();
+                SqlConnection conn = (SqlConnection)_context.Database.GetDbConnection();
+                SqlCommand cmd = conn.CreateCommand();
+                conn.Open();
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                cmd.CommandText = "sp_IngresarMatriculas";
+                cmd.Parameters.Add("@numeroMatricula", System.Data.SqlDbType.Int).Value = matricula.NumeroMatricula;
+                cmd.Parameters.Add("@fechaIngreso", System.Data.SqlDbType.Date).Value = matricula.FechaIngreso;
+                cmd.Parameters.Add("@idNinno", System.Data.SqlDbType.Int).Value = matricula.IdNinno;
+                await cmd.ExecuteNonQueryAsync();
+                conn.Close();
+                //_context.Add(matricula);
+                //await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             ViewData["IdNinno"] = new SelectList(_context.Ninnos, "IdNinno", "Apell1Ninno", matricula.IdNinno);
@@ -102,8 +113,18 @@ namespace NinnoFeliz.Controllers
             {
                 try
                 {
-                    _context.Update(matricula);
-                    await _context.SaveChangesAsync();
+                    SqlConnection conn = (SqlConnection)_context.Database.GetDbConnection();
+                    SqlCommand cmd = conn.CreateCommand();
+                    conn.Open();
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    cmd.CommandText = "sp_ModificarMatriculas";
+                    cmd.Parameters.Add("@numeroMatricula", System.Data.SqlDbType.Int).Value = matricula.NumeroMatricula;
+                    cmd.Parameters.Add("@fechaIngreso", System.Data.SqlDbType.Date).Value = matricula.FechaIngreso;
+                    cmd.Parameters.Add("@idNinno", System.Data.SqlDbType.Int).Value = matricula.IdNinno;
+                    await cmd.ExecuteNonQueryAsync();
+                    conn.Close();
+                    //_context.Update(matricula);
+                    //await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -146,9 +167,17 @@ namespace NinnoFeliz.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var matricula = await _context.Matriculas.FindAsync(id);
-            _context.Matriculas.Remove(matricula);
-            await _context.SaveChangesAsync();
+            SqlConnection conn = (SqlConnection)_context.Database.GetDbConnection();
+            SqlCommand cmd = conn.CreateCommand();
+            conn.Open();
+            cmd.CommandType = System.Data.CommandType.StoredProcedure;
+            cmd.CommandText = "sp_EliminarMatriculas";
+            cmd.Parameters.Add("@numeroMatricula", System.Data.SqlDbType.Int).Value = id;
+            await cmd.ExecuteNonQueryAsync();
+            conn.Close();
+            //var matricula = await _context.Matriculas.FindAsync(id);
+            //_context.Matriculas.Remove(matricula);
+            //await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 

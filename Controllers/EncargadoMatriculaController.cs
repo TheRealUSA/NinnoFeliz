@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using NinnoFeliz.Data;
 using NinnoFeliz.Models;
@@ -63,8 +64,18 @@ namespace NinnoFeliz.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(encargadoMatricula);
-                await _context.SaveChangesAsync();
+                SqlConnection conn = (SqlConnection)_context.Database.GetDbConnection();
+                SqlCommand cmd = conn.CreateCommand();
+                conn.Open();
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                cmd.CommandText = "sp_IngresarEncargado_Matriculas";
+                cmd.Parameters.Add("@idEncargadoMatricula", System.Data.SqlDbType.Int).Value = encargadoMatricula.IdEncargadoMatricula;
+                cmd.Parameters.Add("@numeroMatricula", System.Data.SqlDbType.Int).Value = encargadoMatricula.NumeroMatricula;
+                cmd.Parameters.Add("@idEncargado", System.Data.SqlDbType.Int).Value = encargadoMatricula.IdEncargado;
+                await cmd.ExecuteNonQueryAsync();
+                conn.Close();
+                //_context.Add(encargadoMatricula);
+                //await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             ViewData["IdEncargado"] = new SelectList(_context.Encargados, "IdEncargado", "Apell1Encargado", encargadoMatricula.IdEncargado);
@@ -106,8 +117,18 @@ namespace NinnoFeliz.Controllers
             {
                 try
                 {
-                    _context.Update(encargadoMatricula);
-                    await _context.SaveChangesAsync();
+                    SqlConnection conn = (SqlConnection)_context.Database.GetDbConnection();
+                    SqlCommand cmd = conn.CreateCommand();
+                    conn.Open();
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    cmd.CommandText = "sp_ModificarEncargado_Matriculas";
+                    cmd.Parameters.Add("@idEncargadoMatricula", System.Data.SqlDbType.Int).Value = encargadoMatricula.IdEncargadoMatricula;
+                    cmd.Parameters.Add("@numeroMatricula", System.Data.SqlDbType.Int).Value = encargadoMatricula.NumeroMatricula;
+                    cmd.Parameters.Add("@idEncargado", System.Data.SqlDbType.Int).Value = encargadoMatricula.IdEncargado;
+                    await cmd.ExecuteNonQueryAsync();
+                    conn.Close();
+                    //_context.Update(encargadoMatricula);
+                    //await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -152,9 +173,17 @@ namespace NinnoFeliz.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var encargadoMatricula = await _context.EncargadoMatriculas.FindAsync(id);
-            _context.EncargadoMatriculas.Remove(encargadoMatricula);
-            await _context.SaveChangesAsync();
+            SqlConnection conn = (SqlConnection)_context.Database.GetDbConnection();
+            SqlCommand cmd = conn.CreateCommand();
+            conn.Open();
+            cmd.CommandType = System.Data.CommandType.StoredProcedure;
+            cmd.CommandText = "sp_EliminarEncargado_Matriculas";
+            cmd.Parameters.Add("@idEncargadoMatricula", System.Data.SqlDbType.Int).Value = id;
+            await cmd.ExecuteNonQueryAsync();
+            conn.Close();
+            //var encargadoMatricula = await _context.EncargadoMatriculas.FindAsync(id);
+            //_context.EncargadoMatriculas.Remove(encargadoMatricula);
+            //await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 

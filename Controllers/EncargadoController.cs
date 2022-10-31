@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using NinnoFeliz.Data;
 using NinnoFeliz.Models;
@@ -61,8 +62,22 @@ namespace NinnoFeliz.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(encargado);
-                await _context.SaveChangesAsync();
+                SqlConnection conn = (SqlConnection)_context.Database.GetDbConnection();
+                SqlCommand cmd = conn.CreateCommand();
+                conn.Open();
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                cmd.CommandText = "sp_IngresarEncargados";
+                cmd.Parameters.Add("@idEncargado", System.Data.SqlDbType.Int).Value = encargado.IdEncargado;
+                cmd.Parameters.Add("@nombreEncargado", System.Data.SqlDbType.VarChar, 15).Value = encargado.NombreEncargado;
+                cmd.Parameters.Add("@apell1Encargado", System.Data.SqlDbType.VarChar, 15).Value = encargado.Apell1Encargado;
+                cmd.Parameters.Add("@apell2Encargado", System.Data.SqlDbType.VarChar, 15).Value = encargado.Apell2Encargado;
+                cmd.Parameters.Add("@telefonoEncargado", System.Data.SqlDbType.VarChar, 15).Value = encargado.TelefonoEncargado;
+                cmd.Parameters.Add("@direcciónEncargado", System.Data.SqlDbType.VarChar, 50).Value = encargado.DirecciónEncargado;
+                cmd.Parameters.Add("@idParentezco", System.Data.SqlDbType.Int).Value = encargado.IdParentezco;
+                await cmd.ExecuteNonQueryAsync();
+                conn.Close();
+                //_context.Add(encargado);
+                //await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             ViewData["IdParentezco"] = new SelectList(_context.Parentezcos, "IdParentezco", "DetallePar", encargado.IdParentezco);

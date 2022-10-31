@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using NinnoFeliz.Data;
 using NinnoFeliz.Models;
@@ -61,8 +62,22 @@ namespace NinnoFeliz.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(ninno);
-                await _context.SaveChangesAsync();
+                SqlConnection conn = (SqlConnection)_context.Database.GetDbConnection();
+                SqlCommand cmd = conn.CreateCommand();
+                conn.Open();
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                cmd.CommandText = "sp_IngresarNinnos";
+                cmd.Parameters.Add("@idNinno", System.Data.SqlDbType.Int).Value = ninno.IdNinno;
+                cmd.Parameters.Add("@nombreNinno", System.Data.SqlDbType.VarChar, 15).Value = ninno.NombreNinno;
+                cmd.Parameters.Add("@apell1Ninno", System.Data.SqlDbType.VarChar, 15).Value = ninno.Apell1Ninno;
+                cmd.Parameters.Add("@apell2Ninno", System.Data.SqlDbType.VarChar, 15).Value = ninno.Apell2Ninno;
+                cmd.Parameters.Add("@fechaNacimiento", System.Data.SqlDbType.Date).Value = ninno.FechaNacimiento;
+                cmd.Parameters.Add("@direccionNinno", System.Data.SqlDbType.VarChar, 50).Value = ninno.DireccionNinno;
+                cmd.Parameters.Add("@idGenero", System.Data.SqlDbType.Int).Value = ninno.IdGenero;
+                await cmd.ExecuteNonQueryAsync();
+                conn.Close();
+                //_context.Add(ninno);
+                //await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             ViewData["IdGenero"] = new SelectList(_context.Generos, "IdGenero", "DetalleGen", ninno.IdGenero);
@@ -102,8 +117,22 @@ namespace NinnoFeliz.Controllers
             {
                 try
                 {
-                    _context.Update(ninno);
-                    await _context.SaveChangesAsync();
+                    SqlConnection conn = (SqlConnection)_context.Database.GetDbConnection();
+                    SqlCommand cmd = conn.CreateCommand();
+                    conn.Open();
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    cmd.CommandText = "sp_ModificarNinnos";
+                    cmd.Parameters.Add("@idNinno", System.Data.SqlDbType.Int).Value = ninno.IdNinno;
+                    cmd.Parameters.Add("@nombreNinno", System.Data.SqlDbType.VarChar, 15).Value = ninno.NombreNinno;
+                    cmd.Parameters.Add("@apell1Ninno", System.Data.SqlDbType.VarChar, 15).Value = ninno.Apell1Ninno;
+                    cmd.Parameters.Add("@apell2Ninno", System.Data.SqlDbType.VarChar, 15).Value = ninno.Apell2Ninno;
+                    cmd.Parameters.Add("@fechaNacimiento", System.Data.SqlDbType.Date).Value = ninno.FechaNacimiento;
+                    cmd.Parameters.Add("@direccionNinno", System.Data.SqlDbType.VarChar, 50).Value = ninno.DireccionNinno;
+                    cmd.Parameters.Add("@idGenero", System.Data.SqlDbType.Int).Value = ninno.IdGenero;
+                    await cmd.ExecuteNonQueryAsync();
+                    conn.Close();
+                    //_context.Update(ninno);
+                    //await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -146,9 +175,17 @@ namespace NinnoFeliz.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var ninno = await _context.Ninnos.FindAsync(id);
-            _context.Ninnos.Remove(ninno);
-            await _context.SaveChangesAsync();
+            SqlConnection conn = (SqlConnection)_context.Database.GetDbConnection();
+            SqlCommand cmd = conn.CreateCommand();
+            conn.Open();
+            cmd.CommandType = System.Data.CommandType.StoredProcedure;
+            cmd.CommandText = "sp_EliminarNinnos";
+            cmd.Parameters.Add("@idNinno", System.Data.SqlDbType.Int).Value = id;
+            await cmd.ExecuteNonQueryAsync();
+            conn.Close();
+            //var ninno = await _context.Ninnos.FindAsync(id);
+            //_context.Ninnos.Remove(ninno);
+            //await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 

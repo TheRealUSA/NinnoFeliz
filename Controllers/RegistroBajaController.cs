@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using NinnoFeliz.Data;
 using NinnoFeliz.Models;
@@ -61,8 +62,18 @@ namespace NinnoFeliz.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(registroBaja);
-                await _context.SaveChangesAsync();
+                SqlConnection conn = (SqlConnection)_context.Database.GetDbConnection();
+                SqlCommand cmd = conn.CreateCommand();
+                conn.Open();
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                cmd.CommandText = "sp_IngresarRegistroBajas";
+                cmd.Parameters.Add("@idRegistroBaja", System.Data.SqlDbType.Int).Value = registroBaja.IdRegistroBaja;
+                cmd.Parameters.Add("@fechaBaja", System.Data.SqlDbType.Date).Value = registroBaja.FechaBaja;
+                cmd.Parameters.Add("@idNinno", System.Data.SqlDbType.Int).Value = registroBaja.IdNinno;
+                await cmd.ExecuteNonQueryAsync();
+                conn.Close();
+                //_context.Add(registroBaja);
+                //await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             ViewData["IdNinno"] = new SelectList(_context.Ninnos, "IdNinno", "Apell1Ninno", registroBaja.IdNinno);
@@ -102,8 +113,18 @@ namespace NinnoFeliz.Controllers
             {
                 try
                 {
-                    _context.Update(registroBaja);
-                    await _context.SaveChangesAsync();
+                    SqlConnection conn = (SqlConnection)_context.Database.GetDbConnection();
+                    SqlCommand cmd = conn.CreateCommand();
+                    conn.Open();
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    cmd.CommandText = "sp_ModificarRegistroBajas";
+                    cmd.Parameters.Add("@idRegistroBaja", System.Data.SqlDbType.Int).Value = registroBaja.IdRegistroBaja;
+                    cmd.Parameters.Add("@fechaBaja", System.Data.SqlDbType.Date).Value = registroBaja.FechaBaja;
+                    cmd.Parameters.Add("@idNinno", System.Data.SqlDbType.Int).Value = registroBaja.IdNinno;
+                    await cmd.ExecuteNonQueryAsync();
+                    conn.Close();
+                    //_context.Update(registroBaja);
+                    //await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -146,9 +167,17 @@ namespace NinnoFeliz.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var registroBaja = await _context.RegistroBajas.FindAsync(id);
-            _context.RegistroBajas.Remove(registroBaja);
-            await _context.SaveChangesAsync();
+            SqlConnection conn = (SqlConnection)_context.Database.GetDbConnection();
+            SqlCommand cmd = conn.CreateCommand();
+            conn.Open();
+            cmd.CommandType = System.Data.CommandType.StoredProcedure;
+            cmd.CommandText = "sp_EliminarRegistroBajas";
+            cmd.Parameters.Add("@idRegistroBaja", System.Data.SqlDbType.Int).Value = id;
+            await cmd.ExecuteNonQueryAsync();
+            conn.Close();
+            //var registroBaja = await _context.RegistroBajas.FindAsync(id);
+            //_context.RegistroBajas.Remove(registroBaja);
+            //await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
