@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using NinnoFeliz.Data;
 using NinnoFeliz.Models;
@@ -61,8 +62,18 @@ namespace NinnoFeliz.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(cargoMensuale);
-                await _context.SaveChangesAsync();
+                SqlConnection conn = (SqlConnection)_context.Database.GetDbConnection();
+                SqlCommand cmd = conn.CreateCommand(); 
+                conn.Open();
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                cmd.CommandText = "sp_IngresarCargoMensuales";
+                cmd.Parameters.Add("@idCargo", System.Data.SqlDbType.Int).Value = cargoMensuale.IdCargo;
+                cmd.Parameters.Add("@cargoMensual", System.Data.SqlDbType.VarChar, 10).Value = cargoMensuale.CargoMensual;
+                cmd.Parameters.Add("@idUsoComedor", System.Data.SqlDbType.Int).Value = cargoMensuale.IdUsoComedor;
+                await cmd.ExecuteNonQueryAsync();
+                conn.Close();
+                //_context.Add(cargoMensuale);
+                //await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             ViewData["IdUsoComedor"] = new SelectList(_context.UsoComedores, "IdUsoComedor", "IdUsoComedor", cargoMensuale.IdUsoComedor);
@@ -102,8 +113,18 @@ namespace NinnoFeliz.Controllers
             {
                 try
                 {
-                    _context.Update(cargoMensuale);
-                    await _context.SaveChangesAsync();
+                    SqlConnection conn = (SqlConnection)_context.Database.GetDbConnection();
+                    SqlCommand cmd = conn.CreateCommand();
+                    conn.Open();
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    cmd.CommandText = "sp_ModificarCargoMensuales";
+                    cmd.Parameters.Add("@idCargo", System.Data.SqlDbType.Int).Value = cargoMensuale.IdCargo;
+                    cmd.Parameters.Add("@cargoMensual", System.Data.SqlDbType.VarChar, 10).Value = cargoMensuale.CargoMensual;
+                    cmd.Parameters.Add("@idUsoComedor", System.Data.SqlDbType.Int).Value = cargoMensuale.IdUsoComedor;
+                    await cmd.ExecuteNonQueryAsync();
+                    conn.Close();
+                    //_context.Update(cargoMensuale);
+                    //await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -143,12 +164,20 @@ namespace NinnoFeliz.Controllers
 
         // POST: CargoMensuales/Delete/5
         [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
+        [ValidateAntiForgeryToken] 
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var cargoMensuale = await _context.CargoMensuales.FindAsync(id);
-            _context.CargoMensuales.Remove(cargoMensuale);
-            await _context.SaveChangesAsync();
+            SqlConnection conn = (SqlConnection)_context.Database.GetDbConnection();
+            SqlCommand cmd = conn.CreateCommand();
+            conn.Open();
+            cmd.CommandType = System.Data.CommandType.StoredProcedure;
+            cmd.CommandText = "sp_EliminarCargoMensuales";
+            cmd.Parameters.Add("@idCargo", System.Data.SqlDbType.Int).Value = id;
+            await cmd.ExecuteNonQueryAsync();
+            conn.Close();
+            //var cargoMensuale = await _context.CargoMensuales.FindAsync(id);
+            //_context.CargoMensuales.Remove(cargoMensuale);
+            //await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 

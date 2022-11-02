@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using NinnoFeliz.Data;
 using NinnoFeliz.Models;
@@ -61,8 +62,18 @@ namespace NinnoFeliz.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(abonadore);
-                await _context.SaveChangesAsync();
+                SqlConnection conn = (SqlConnection)_context.Database.GetDbConnection();
+                SqlCommand cmd = conn.CreateCommand();
+                conn.Open();
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                cmd.CommandText = "sp_IngresarAbonadores";
+                cmd.Parameters.Add("@idAbonador", System.Data.SqlDbType.Int).Value = abonadore.IdAbonador;
+                cmd.Parameters.Add("@numeroCuenta", System.Data.SqlDbType.Int).Value = abonadore.NumeroCuenta;
+                cmd.Parameters.Add("@idEncargado", System.Data.SqlDbType.Int).Value = abonadore.IdEncargado;
+                await cmd.ExecuteNonQueryAsync();
+                conn.Close();
+                //_context.Add(abonadore);
+                //await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             ViewData["IdEncargado"] = new SelectList(_context.Encargados, "IdEncargado", "Apell1Encargado", abonadore.IdEncargado);
@@ -102,8 +113,18 @@ namespace NinnoFeliz.Controllers
             {
                 try
                 {
-                    _context.Update(abonadore);
-                    await _context.SaveChangesAsync();
+                    SqlConnection conn = (SqlConnection)_context.Database.GetDbConnection();
+                    SqlCommand cmd = conn.CreateCommand();
+                    conn.Open();
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    cmd.CommandText = "sp_ModificarAbonadores";
+                    cmd.Parameters.Add("@idAbonador", System.Data.SqlDbType.Int).Value = abonadore.IdAbonador;
+                    cmd.Parameters.Add("@numeroCuenta", System.Data.SqlDbType.Int).Value = abonadore.NumeroCuenta;
+                    cmd.Parameters.Add("@idEncargado", System.Data.SqlDbType.Int).Value = abonadore.IdEncargado;
+                    await cmd.ExecuteNonQueryAsync();
+                    conn.Close();
+                    //_context.Add(abonadore);
+                    //await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -146,9 +167,17 @@ namespace NinnoFeliz.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var abonadore = await _context.Abonadores.FindAsync(id);
-            _context.Abonadores.Remove(abonadore);
-            await _context.SaveChangesAsync();
+            SqlConnection conn = (SqlConnection)_context.Database.GetDbConnection();
+            SqlCommand cmd = conn.CreateCommand();
+            conn.Open();
+            cmd.CommandType = System.Data.CommandType.StoredProcedure;
+            cmd.CommandText = "sp_EliminarAbonadores";
+            cmd.Parameters.Add("@idAbonador", System.Data.SqlDbType.Int).Value = id;
+            await cmd.ExecuteNonQueryAsync();
+            conn.Close();
+            //var abonadore = await _context.Abonadores.FindAsync(id);
+            //_context.Abonadores.Remove(abonadore);
+            //await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 

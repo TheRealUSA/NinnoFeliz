@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Data.SqlClient; 
 using Microsoft.EntityFrameworkCore;
 using NinnoFeliz.Data;
 using NinnoFeliz.Models;
@@ -58,8 +59,17 @@ namespace NinnoFeliz.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(mese);
-                await _context.SaveChangesAsync();
+                SqlConnection conn = (SqlConnection)_context.Database.GetDbConnection();
+                SqlCommand cmd = conn.CreateCommand();
+                conn.Open();
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                cmd.CommandText = "sp_IngresarMeses";
+                cmd.Parameters.Add("@idMes", System.Data.SqlDbType.Int).Value = mese.IdMes; 
+                cmd.Parameters.Add("@nombreMes", System.Data.SqlDbType.VarChar, 10).Value = mese.NombreMes;
+                await cmd.ExecuteNonQueryAsync();
+                conn.Close();
+                //_context.Add(mese);
+                //await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             return View(mese);
@@ -97,8 +107,17 @@ namespace NinnoFeliz.Controllers
             {
                 try
                 {
-                    _context.Update(mese);
-                    await _context.SaveChangesAsync();
+                    SqlConnection conn = (SqlConnection)_context.Database.GetDbConnection();
+                    SqlCommand cmd = conn.CreateCommand();
+                    conn.Open();
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    cmd.CommandText = "sp_ModificarMeses";
+                    cmd.Parameters.Add("@idMes", System.Data.SqlDbType.Int).Value = mese.IdMes;
+                    cmd.Parameters.Add("@nombreMes", System.Data.SqlDbType.VarChar, 10).Value = mese.NombreMes;
+                    await cmd.ExecuteNonQueryAsync();
+                    conn.Close();
+                    //_context.Update(mese);
+                    //await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -139,9 +158,17 @@ namespace NinnoFeliz.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var mese = await _context.Meses.FindAsync(id);
-            _context.Meses.Remove(mese);
-            await _context.SaveChangesAsync();
+            SqlConnection conn = (SqlConnection)_context.Database.GetDbConnection();
+            SqlCommand cmd = conn.CreateCommand();
+            conn.Open();
+            cmd.CommandType = System.Data.CommandType.StoredProcedure;
+            cmd.CommandText = "sp_EliminarMeses";
+            cmd.Parameters.Add("@idMes", System.Data.SqlDbType.Int).Value = id;
+            await cmd.ExecuteNonQueryAsync();
+            conn.Close();
+            //var mese = await _context.Meses.FindAsync(id);
+            //_context.Meses.Remove(mese);
+            //await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 

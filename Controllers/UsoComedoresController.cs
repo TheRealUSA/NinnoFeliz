@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using NinnoFeliz.Data;
 using NinnoFeliz.Models;
@@ -63,8 +64,19 @@ namespace NinnoFeliz.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(usoComedore);
-                await _context.SaveChangesAsync();
+                SqlConnection conn = (SqlConnection)_context.Database.GetDbConnection();
+                SqlCommand cmd = conn.CreateCommand();
+                conn.Open();
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                cmd.CommandText = "sp_IngresarUsoComedores";
+                cmd.Parameters.Add("@idUsoComedor", System.Data.SqlDbType.Int).Value = usoComedore.IdUsoComedor;
+                cmd.Parameters.Add("@cantidadDias", System.Data.SqlDbType.Int).Value = usoComedore.CantidadDias;
+                cmd.Parameters.Add("@idMes", System.Data.SqlDbType.Int).Value = usoComedore.IdMes;
+                cmd.Parameters.Add("@idNinno", System.Data.SqlDbType.Int).Value = usoComedore.IdNinno;
+                await cmd.ExecuteNonQueryAsync();
+                conn.Close();
+                //_context.Add(usoComedore);
+                //await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             ViewData["IdMes"] = new SelectList(_context.Meses, "IdMes", "NombreMes", usoComedore.IdMes);
@@ -106,8 +118,19 @@ namespace NinnoFeliz.Controllers
             {
                 try
                 {
-                    _context.Update(usoComedore);
-                    await _context.SaveChangesAsync();
+                    SqlConnection conn = (SqlConnection)_context.Database.GetDbConnection();
+                    SqlCommand cmd = conn.CreateCommand();
+                    conn.Open();
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure; 
+                    cmd.CommandText = "sp_ModificarUsoComedores";
+                    cmd.Parameters.Add("@idUsoComedor", System.Data.SqlDbType.Int).Value = usoComedore.IdUsoComedor;
+                    cmd.Parameters.Add("@cantidadDias", System.Data.SqlDbType.Int).Value = usoComedore.CantidadDias;
+                    cmd.Parameters.Add("@idMes", System.Data.SqlDbType.Int).Value = usoComedore.IdMes;
+                    cmd.Parameters.Add("@idNinno", System.Data.SqlDbType.Int).Value = usoComedore.IdNinno;
+                    await cmd.ExecuteNonQueryAsync();
+                    conn.Close(); 
+                    //_context.Update(usoComedore);
+                    //await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -152,9 +175,17 @@ namespace NinnoFeliz.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var usoComedore = await _context.UsoComedores.FindAsync(id);
-            _context.UsoComedores.Remove(usoComedore);
-            await _context.SaveChangesAsync();
+            SqlConnection conn = (SqlConnection)_context.Database.GetDbConnection();
+            SqlCommand cmd = conn.CreateCommand();
+            conn.Open();
+            cmd.CommandType = System.Data.CommandType.StoredProcedure;
+            cmd.CommandText = "sp_EliminarUsoComedores";
+            cmd.Parameters.Add("@idUsoComedor", System.Data.SqlDbType.Int).Value = id;
+            await cmd.ExecuteNonQueryAsync();
+            conn.Close();
+            //var usoComedore = await _context.UsoComedores.FindAsync(id);
+            //_context.UsoComedores.Remove(usoComedore);
+            //await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
